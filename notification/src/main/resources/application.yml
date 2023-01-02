@@ -16,10 +16,19 @@ spring:
         format_sql: true
     show-sql: true
   zipkin:
-    base-url: http://localhost:9411
+    base-url: http://localhost:9411 #Publicacion de zipkin
+  rabbitmq:
+    addresses: localhost:5672 #Publicacion de rabbitmq
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
     fetch-registry: true
     register-with-eureka: true
+rabbitmq:
+  exchanges:
+    internal: internal.exchange #Nombre del exchange
+  queue:
+    notification: notification.queue #Nombre de la cola o queue
+  routing-keys:
+    internal-notification: internal.notification.routing-key

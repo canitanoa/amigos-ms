@@ -39,6 +39,60 @@ En el *application.yml* configurar el rutoe a los componentes internos de la arq
             - Path=/api/v1/customers/**
 ```
 
+### AMQP:
+El componente *AMQP* se va a utlizar como intermediario de mensajes va a contener a los Producers y Consumers
+#### Imple:
+En el proyecto *AMQP* agregar a las dependencias del *pom.xml*
+```xml
+<!--Para agregar los módulos spring-amqp y spring-rabbit-->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-amqp</artifactId>
+</dependency>
+```
+Creamos las clases:
+```txt
+- RabbitMQConfig.java -> Es la clase de configuracion
+- RabbitMQMessageProducer.java -> Es la clase que produce los mensajes
+```
+
+En los proyectos que implementen AMQP (customer y notificaciones) 
+1. Agregar las dependencias al pom.xml
+```xml
+<!--Configurar AMQP-->
+<!--Para agregar los módulos spring-amqp y spring-rabbit-->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-amqp</artifactId>
+</dependency>
+<!--Para visualizar el proy AMQP-->
+<dependency>
+    <groupId>org.amigosms</groupId>
+    <artifactId>clients</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <!--<scope>compile</scope>-->
+</dependency>
+```
+2. Comfigurar el los *application.xml*
+```yaml
+rabbitmq:
+  exchanges:
+    internal: internal.exchange #Nombre del exchange
+  queue:
+    notification: notification.queue #Nombre de la cola o queue
+  routing-keys:
+    internal-notification: internal.notification.routing-key
+```
+3. Crear las clases de configuracion para cada proyecto:
+```yaml
+NotificationConfig.java 
+  En esta clase se definen: 
+    - internal-exchange
+    - queue
+    - binding
+
+```
+
 ## Libs:
 
 ### Sleuth:
@@ -57,6 +111,10 @@ En cada proyecto agregar la dependencia en el pom.xml:
 
 
 ## Herramientas:
+
+### Docker Compose:
+Es una herramienta para definir y ejecutar aplicaciones Docker de varios contenedores. Con Compose, utiliza un archivo YAML para configurar los servicios de su aplicación. Luego, con un solo comando, crea e inicia todos los servicios desde su configuración.
+
 
 ### Zipking: 
 Herramienta de rastreo distribuido (https://zipkin.io/) que mide la latencia de comunicación entre los componentes. Agrega la interface gráfica para visualizar la traza de las peticiones entre los microservicios.
@@ -93,4 +151,40 @@ https://github.com/openzipkin-attic/docker-zipkin/blob/master/docker-compose.yml
 ```yaml
 zipkin:
   base-url: http://localhost:9411
+```
+
+### Brokers:
+
+#### AMQP
+“Advanced Message Queuing Protocol ” es un estándar abierto para enviar mensajes entre aplicaciones y/o organizaciones. Este estándar nos permite eliminar el “vendor lock” en lo que respecta a la creación de arquitecturas distribuidas ya que podemos utilizar cualquier intermediario y cambiarlo cuando así lo queramos sin tener necesidad de cambiar el código que escribimos para enviar o recibir los mensajes.
+
+El protocolo AMQP resuelve varios problemas al mismo tiempo: por un lado, el protocolo (en colaboración con un bróker de mensajería) se encarga de una transmisión sólida de datos. Por otro, AMQP permite almacenar mensajes en una cola. Esto, a su vez, permite una comunicación asíncrona: transmisor y receptor no deben actuar al mismo ritmo. El receptor (consumidor) del mensaje no tiene por qué aceptar, procesar la información directamente y confirmar la recepción al emisor (productor). En su lugar, recuperará el mensaje de la cola cuando tenga capacidad disponible para ello. Esto ofrece al productor, entre otras cosas, la posibilidad de seguir trabajando y se evitan los tiempos de inactividad.
+
+En el cosmos de AMQP hay tres actores y un objeto:
+
+- El mensaje es el elemento central de toda la comunicación.
+- El productor (producer) crea un mensaje y lo envía.
+- El bróker de mensajería distribuye el mensaje de acuerdo con reglas definidas en diferentes colas (queue).
+- El consumidor (consumer) recupera el mensaje de la cola —a la que tiene acceso— y lo edita.
+
+#### RabbitMQ
+
+Es uno de los intermediarios de mensajes de código abierto más populares que trabaja bajo el estandar AMQP. 
+#### Imple:
+1. Agregar al docker-compose.yml
+```txt
+  rabbitmq:
+    image: rabbitmq:3.9.11-management-alpine
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"   #to public messages
+      - "15672:15672" #to expose messages
+```
+```bash
+# Ejecutar el contenedor con el comando: 
+docker compose up -d
+# La herramienta se publica en:
+http://localhost:15672/
+# User: guest
+# Pass: guest
 ```
