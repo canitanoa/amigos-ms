@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication(
         scanBasePackages = {
-                "org.amigosms"
+                "org.amigosms"  //Para inyectar el producer del proyecto amqp
         }
 )
 public class NotificationApplication {

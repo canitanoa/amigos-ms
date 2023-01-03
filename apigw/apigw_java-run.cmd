@@ -1,0 +1,1 @@
+java -jar target/apigw-1.0-SNAPSHOT.jar

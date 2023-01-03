@@ -5,7 +5,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
-@SpringBootApplication
+@SpringBootApplication(
+        scanBasePackages = {
+                "org.amigosms" //Para inyectar el producer del proyecto amqp
+        }
+)
 @EnableEurekaClient //Configurarlo como cliente de Eureka
 @EnableFeignClients(basePackages = "org.amigosms.clients")
 public class CustomerApplication {

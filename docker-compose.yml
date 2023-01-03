@@ -1,4 +1,6 @@
 services:
+  #Se definen las imagenes a bajar de Docker-Hub para componentizarlas en nuestro Docker-Desktop
+
   postgres:
     container_name: postgres
     image: postgres
@@ -27,21 +29,106 @@ services:
     networks:
       - postgres
     restart: unless-stopped
+
   zipkin:
     image: openzipkin/zipkin
     container_name: zipkin
     ports:
       - "9411:9411"
+    networks: #para conectar los contenedores
+      - spring
+
   rabbitmq:
     image: rabbitmq:3.9.11-management-alpine
     container_name: rabbitmq
     ports:
       - "5672:5672"   #to public messages
       - "15672:15672" #to expose messages
+    networks: #para conectar los contenedores
+      - spring
 
+  #Definimos las imagenes que subimos a nustro repo de docker-hub
+
+  eureka-server:
+    image: acanitano/eureka-server:latest
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    environment: #se define un profile para que toma application-docker.yml en ves de application.yml
+      - SPRING_PROFILES_ACTIVE=docker
+    networks: #para conectar los contenedores
+      - spring
+    depends_on:
+      - zipkin
+
+  apigw:
+    image: acanitano/apigw:latest
+    container_name: apigw
+    ports:
+      - "8083:8083"
+    environment: #se define un profile para que toma application-docker.yml en ves de application.yml
+      - SPRING_PROFILES_ACTIVE=docker
+    networks: #para conectar los contenedores
+      - spring
+    depends_on:
+      - zipkin
+      - eureka-server
+
+  customer:
+    image: acanitano/customer:latest
+    container_name: customer
+    ports:
+      - "8080:8080"
+    environment: #se define un profile para que toma application-docker.yml en ves de application.yml
+      - SPRING_PROFILES_ACTIVE=docker
+    networks: #para conectar los contenedores
+      - spring
+      - postgres
+    depends_on: #los services con los que se relaciona
+      - zipkin
+      - eureka-server
+      - postgres
+      - rabbitmq
+
+  fraud:
+    image: acanitano/fraud:latest
+    container_name: fraud
+    ports:
+      - "8081:8081"
+    environment: #se define un profile para que toma application-docker.yml en ves de application.yml
+      - SPRING_PROFILES_ACTIVE=docker
+    networks: #para conectar los contenedores
+      - spring
+      - postgres
+    depends_on: #los services con los que se relaciona
+      - zipkin
+      - eureka-server
+      - postgres
+      - rabbitmq
+
+  notification:
+    image: acanitano/notification:latest
+    container_name: notification
+    ports:
+      - "8082:8082"
+    environment: #se define un profile para que toma application-docker.yml en ves de application.yml
+      - SPRING_PROFILES_ACTIVE=docker
+    networks: #para conectar los contenedores
+      - spring
+      - postgres
+    depends_on: #los services con los que se relaciona
+      - zipkin
+      - eureka-server
+      - postgres
+      - rabbitmq
+
+#Definimos las networks para comunicar a los contenedores
 networks:
   postgres:
     driver: bridge
+  spring:
+    driver: bridge
+
 volumes:
   postgres:
   pgadmin:

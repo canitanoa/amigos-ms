@@ -18,6 +18,7 @@ public class NotificationService {
                         .toCustomerEmail(notificationRequest.toCustomerName())
                         .sender("Cani")
                         .message(notificationRequest.message())
+                        .createAt(notificationRequest.createDate())
                         .sentAt(LocalDateTime.now())
                         .build()
         );

@@ -23,5 +23,6 @@ public class Notification {
     private String toCustomerEmail;
     private String sender;
     private String message;
+    private String createAt;
     private LocalDateTime sentAt;
 }

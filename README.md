@@ -109,11 +109,74 @@ En cada proyecto agregar la dependencia en el pom.xml:
 </dependency>
 ```
 
+## PlugIns:
+
+### Jib:
+Jib es un complemento de Maven para crear imágenes Docker y OCI para sus aplicaciones Java.
+Crea y envía una imagen de contenedor para su aplicación a un registro de contenedor.
+Para mas info: https://github.com/GoogleContainerTools/jib/tree/master/jib-maven-plugin
+- Imple:
+
+1. Agregar en la seccion de *pluginManagement* del parent pom.xml:
+
+```xml
+<project>
+  ...
+  <build>
+    <plugins>
+      ...
+      <plugin>
+        <groupId>com.google.cloud.tools</groupId>
+        <artifactId>jib-maven-plugin</artifactId>
+        <version>3.3.1</version>
+        <configuration>
+            <!--Configura la imagen base para construir su aplicación encima-->
+            <from>
+                <platforms>
+                    ...
+            </from>
+            <!--Configura la imagen de destino para construir su aplicación.-->
+            <to>
+                <image>
+                    ...
+            </to>
+        </configuration>
+      </plugin>
+      ...
+    </plugins>
+  </build>
+  ...
+</project>
+```
+2. Agregar el profile en los pom.xml de los proyecto que se requieran componentizar:
+```xml
+    <!--Creo el profile para que JIB cree la imagen del proyecto y lo suba a la cuenta de docker-hub-->
+    <profiles>
+        <profile>
+            <id>build-docker-image</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.google.cloud.tools</groupId>
+                        <artifactId>jib-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+```
+3. Creamos para cada proyecto un *xxx_jib.cmd* con el comando maven para empaquetar el proyecto y crear la imagen con el profile definido con el plugin de maven:
+```txt
+mvn clean package -P build-docker-image
+```
 
 ## Herramientas:
 
 ### Docker Compose:
 Es una herramienta para definir y ejecutar aplicaciones Docker de varios contenedores. Con Compose, utiliza un archivo YAML para configurar los servicios de su aplicación. Luego, con un solo comando, crea e inicia todos los servicios desde su configuración.
+
+### Docker:
+
 
 
 ### Zipking: 
