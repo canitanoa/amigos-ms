@@ -16,6 +16,7 @@ Repositorio con imple de MS
 ### Eureka:
 http://localhost:8761/
 
+*Se debe deshabilitar para kubernetes ya que se reemplaza por los Services*
 
 ### APIGW:
 El componenete apigw se utiliza como puerta de enlace y balanceador de carga hacia los componentes internos. 
@@ -58,7 +59,7 @@ Creamos las clases:
 
 En los proyectos que implementen AMQP (customer y notificaciones) 
 1. Agregar las dependencias al pom.xml
-```xml
+```txt
 <!--Configurar AMQP-->
 <!--Para agregar los módulos spring-amqp y spring-rabbit-->
 <dependency>
@@ -84,7 +85,7 @@ rabbitmq:
     internal-notification: internal.notification.routing-key
 ```
 3. Crear las clases de configuracion para cada proyecto:
-```yaml
+```txt
 NotificationConfig.java 
   En esta clase se definen: 
     - internal-exchange
@@ -92,6 +93,87 @@ NotificationConfig.java
     - binding
 
 ```
+
+### K8S:
+Contiene las configuraciones del cluster de kubernetes para todos los componentes que se deplieguen en la plataforma:
+Se definen los siguientes manifiestos:
+- configmap.yml
+- service.yml
+- statefulset.yml
+- volume.yml
+
+```txt
+
+Para iniciar minikube: 
+    minikube start --memory=4g
+
+Para aplicar las configuraciones al cluster k8s:
+    Hay que estar parado sobre ...amigos_ms\k8s\minikube\bootstrap>
+    
+    Estas son las config de los pods:
+        kubectl apply -f bootstrap/postgres
+        kubectl apply -f bootstrap/rabbitmq
+        kubectl apply -f bootstrap/zipkin
+    
+    Estas son las config de los services:
+        kubectl apply -f services/customer
+        kubectl apply -f services/fraud
+        kubectl apply -f services/notification
+    
+Para ver los pods:
+    kubectl get pods -w
+    kubectl get all
+    
+Para obtener info del pod:
+    kubectl describe pod postgres-0
+    
+Para ver los logs del pod:
+    kubectl logs postgres-0 
+    
+Para acceder al pod donde esta el volumen de base de datos: 
+	kubectl exec -it postgres-0 -- psql -U amigoscode
+
+	Para listar las DB del pod:
+	amigoscode=# \l	
+	
+	Para crear las DB dentro del pod:
+	amigoscode=# create database customer;
+	amigoscode=# create database fraud;
+	amigoscode=# create database notification;
+	amigoscode=# \l
+	
+Para acceder a los services por kubectl:
+    kubectl get svc
+	
+Para acceder a los services por minikube:
+    minikube service --url postgres
+    minikube service --url rabbitmq
+    minikube service --url zipkin
+
+PRUEBA por KS8:
+    1) Para acceder a un service de tipo LoadBalancer en este caso el el de customer:
+        minikube tunnel
+        Luego se le puede pegar desde un Postman 
+    2) Lebantar todos los services por cmd separados:
+        Postgres:
+            minikube service --url postgres
+                http://127.0.0.1:59891 -> el puerto es random
+                                          el puerto que arroja es el que se configura en el DBeaver
+        Zipkin:
+            minikube service --url zipkin
+        Rabbit:
+            minikube service --url rabbitmq
+    
+    
+    
+Buscar un puerto activo en windows por cmd:
+    netstat -ano | findstr :5432
+    taskkill /PID 7844 /F
+    
+```
+
+
+
 
 ## Libs:
 
@@ -119,7 +201,7 @@ Para mas info: https://github.com/GoogleContainerTools/jib/tree/master/jib-maven
 
 1. Agregar en la seccion de *pluginManagement* del parent pom.xml:
 
-```xml
+```txt
 <project>
   ...
   <build>
@@ -169,6 +251,9 @@ Para mas info: https://github.com/GoogleContainerTools/jib/tree/master/jib-maven
 ```txt
 mvn clean package -P build-docker-image
 ```
+
+
+
 
 ## Herramientas:
 

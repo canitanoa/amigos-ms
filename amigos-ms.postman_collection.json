@@ -16,7 +16,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"firstName\": \"Adrian\",\r\n    \"lastname\": \"Canitano\",\r\n    \"email\": \"acani@gmail.com\"\r\n}",
+							"raw": "{\r\n    \"firstName\": \"Adrian\",\r\n    \"lastname\": \"Canitano\",\r\n    \"email\": \"adri@gmail.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -29,6 +29,63 @@
 								"localhost"
 							],
 							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"customers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "customers (por apigw)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstName\": \"Adrian\",\r\n    \"lastname\": \"Canitano\",\r\n    \"email\": \"acani@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8083/api/v1/customers",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"api",
+								"v1",
+								"customers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "customers (por k8s)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstName\": \"Adrian\",\r\n    \"lastname\": \"Canitano\",\r\n    \"email\": \"acani@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost/api/v1/customers",
+							"host": [
+								"localhost"
+							],
 							"path": [
 								"api",
 								"v1",

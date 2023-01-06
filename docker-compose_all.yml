@@ -1,3 +1,6 @@
+# Esta config de docker-compose lebanta todos los componentes incluyendo eureka y apigw para
+# que se puedan probar en docker-descktop.
+
 services:
   #Se definen las imagenes a bajar de Docker-Hub para componentizarlas en nuestro Docker-Desktop
 
@@ -51,30 +54,30 @@ services:
 
   #Definimos las imagenes (DE NUESTRO PROYECTO) que subimos a nustro repo de docker-hub
 
-#  eureka-server:
-#    image: acanitano/eureka-server:latest
-#    container_name: eureka-server
-#    ports:
-#      - "8761:8761"
-#    environment: #se define un profile para que toma application-docker.yml en ves de application.yml
-#      - SPRING_PROFILES_ACTIVE=docker
-#    networks: #para conectar los contenedores
-#      - spring
-#    depends_on:
-#      - zipkin
-#
-#  apigw:
-#    image: acanitano/apigw:latest
-#    container_name: apigw
-#    ports:
-#      - "8083:8083"
-#    environment: #se define un profile para que toma application-docker.yml en ves de application.yml
-#      - SPRING_PROFILES_ACTIVE=docker
-#    networks: #para conectar los contenedores
-#      - spring
-#    depends_on:
-#      - zipkin
-#      - eureka-server
+  eureka-server:
+    image: acanitano/eureka-server:latest
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    environment: #se define un profile para que toma application-docker.yml en ves de application.yml
+      - SPRING_PROFILES_ACTIVE=docker
+    networks: #para conectar los contenedores
+      - spring
+    depends_on:
+      - zipkin
+
+  apigw:
+    image: acanitano/apigw:latest
+    container_name: apigw
+    ports:
+      - "8083:8083"
+    environment: #se define un profile para que toma application-docker.yml en ves de application.yml
+      - SPRING_PROFILES_ACTIVE=docker
+    networks: #para conectar los contenedores
+      - spring
+    depends_on:
+      - zipkin
+      - eureka-server
 
   customer:
     image: acanitano/customer:latest
@@ -88,7 +91,7 @@ services:
       - postgres
     depends_on: #los services con los que se relaciona
       - zipkin
-#      - eureka-server
+      - eureka-server
       - postgres
       - rabbitmq
 
@@ -104,7 +107,7 @@ services:
       - postgres
     depends_on: #los services con los que se relaciona
       - zipkin
-#      - eureka-server
+      - eureka-server
       - postgres
       - rabbitmq
 
@@ -120,7 +123,7 @@ services:
       - postgres
     depends_on: #los services con los que se relaciona
       - zipkin
-#      - eureka-server
+      - eureka-server
       - postgres
       - rabbitmq
 

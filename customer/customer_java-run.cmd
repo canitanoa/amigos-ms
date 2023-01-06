@@ -1,1 +1,0 @@
-java -jar target/costomer-1.0-SNAPSHOT.jar

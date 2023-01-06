@@ -1,0 +1,1 @@
+java -jar target/customer-1.0-SNAPSHOT.jar -Dspring.profiles.active=default

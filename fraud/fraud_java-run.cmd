@@ -1,1 +1,0 @@
-java -jar target/fraud-1.0-SNAPSHOT.jar
