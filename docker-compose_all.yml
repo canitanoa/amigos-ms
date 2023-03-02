@@ -1,4 +1,4 @@
-# Esta config de docker-compose lebanta todos los componentes incluyendo eureka y apigw para
+# Esta config de docker-compose levanta todos los componentes incluyendo eureka y apigw para
 # que se puedan probar en docker-descktop.
 
 services:
